@@ -1,0 +1,48 @@
+name: Dew CI — Guardrails, Calibration & Native JNI Check
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  verify-core-and-jni:
+    name: Python Core, Calibration Corpus & C++ JNI Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up JDK 17 (for JNI headers jni.h)
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Run Qwen3.8-9B-Distill Spanish Calibration & Packaging Pipeline
+        run: |
+          python model_pipeline/calibrate_and_package.py
+          python model_pipeline/evaluate_quantized_models.py
+
+      - name: Run End-to-End Test Suite (Memory, Inventory, Domotics, Spanish Gov & JNI Contract)
+        run: |
+          python -m unittest discover -s tests -v
+
+      - name: Verify C++17 Native JNI Bridge Compilation
+        run: |
+          g++ -std=c++17 -O2 -Wall -Wextra -Werror \
+            -DDEW_HAS_LLAMA_CPP=0 \
+            -I"${JAVA_HOME}/include" \
+            -I"${JAVA_HOME}/include/linux" \
+            -I"android_app/src/main/cpp" \
+            -c android_app/src/main/cpp/dew_jni_bridge.cpp \
+            -o /tmp/dew_jni_bridge.o
+          ls -lh /tmp/dew_jni_bridge.o

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f766e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <title>Dew · Asistente Doméstico Personal (RedMagic Tablet 16GB &amp; Móvil)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --phone-bg: #f8fafc;
+      --card: #ffffff;
+      --primary: #0f766e;
+      --primary-light: #ccfbf1;
+      --text: #0f172a;
+      --muted: #475569;
+      --amber: #d97706;
+      --amber-bg: #fef3c7;
+      --danger: #b91c1c;
+      --danger-bg: #fee2e2;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body {
+      margin: 0; padding: 14px; background: var(--bg); color: var(--text);
+      display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;
+    }
+    .phone-frame {
+      width: 412px; max-width: 100%; background: var(--phone-bg);
+      border-radius: 34px; border: 8px solid #334155; overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); display: flex; flex-direction: column; height: 860px;
+      transition: width 0.25s ease, height 0.25s ease;
+    }
+    .phone-frame.tablet-mode {
+      width: 1160px; max-width: 98vw; height: 92vh; min-height: 720px; border-radius: 26px;
+    }
+    .phone-frame.tablet-mode .content {
+      display: grid; grid-template-columns: 440px 1fr; gap: 16px; align-items: start; overflow-y: auto; padding: 16px;
+    }
+    .phone-frame.tablet-mode .voice-box {
+      position: sticky; top: 0;
+    }
+    .topbar {
+      background: var(--primary); color: #fff; padding: 14px 16px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .topbar h1 { margin: 0; font-size: 1.05rem; }
+    .topbar .sub { font-size: 0.72rem; opacity: 0.9; margin-top: 2px; }
+    .hw-bar {
+      background: #134e4a; color: #ccfbf1; padding: 6px 14px; font-size: 0.72rem;
+      display: flex; justify-content: space-between; align-items: center; gap: 6px;
+    }
+    .hw-bar select, .hw-bar button {
+      background: #0f766e; color: #fff; border: 1px solid #2dd4bf; border-radius: 6px;
+      padding: 2px 6px; font-size: 0.7rem; cursor: pointer;
+    }
+    .content { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .card h3 { margin: 0 0 6px 0; font-size: 0.9rem; color: var(--primary); }
+    .badge {
+      display: inline-block; padding: 2px 7px; border-radius: 99px; font-size: 0.68rem; font-weight: 600;
+    }
+    .badge-ok { background: var(--primary-light); color: var(--primary); }
+    .badge-warn { background: var(--amber-bg); color: var(--amber); }
+    .badge-danger { background: var(--danger-bg); color: var(--danger); }
+    .voice-box {
+      background: linear-gradient(135deg, #f0fdfa, #ffffff); border: 1.5px solid #5eead4;
+    }
+    .input-row { display: flex; gap: 6px; margin-top: 8px; }
+    .input-row input, textarea {
+      flex: 1; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.82rem;
+    }
+    button.btn {
+      background: var(--primary); color: #fff; border: none; border-radius: 8px;
+      padding: 7px 11px; font-size: 0.78rem; font-weight: 600; cursor: pointer;
+    }
+    button.btn-secondary {
+      background: #e2e8f0; color: #1e293b; border: none; border-radius: 8px;
+      padding: 6px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+    }
+    button.btn-danger { background: var(--danger); color: #fff; border: none; border-radius: 8px; padding: 7px 11px; font-size: 0.76rem; cursor: pointer; }
+    .quick-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+    .quick-chips button {
+      background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 99px;
+      padding: 4px 9px; font-size: 0.7rem; cursor: pointer; color: #334155;
+    }
+    .item-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 7px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.8rem;
+    }
+    .item-row:last-child { border-bottom: none; }
+    .nav {
+      display: grid; grid-template-columns: repeat(4, 1fr); background: #fff;
+      border-top: 1px solid var(--border); padding: 6px 4px;
+    }
+    .nav button {
+      background: none; border: none; padding: 6px 2px; font-size: 0.72rem;
+      color: var(--muted); cursor: pointer; font-weight: 600; border-radius: 8px;
+    }
+    .nav button.active { color: var(--primary); background: var(--primary-light); }
+    .small { font-size: 0.73rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="phone-frame" id="deviceFrame">
+    <div class="topbar">
+      <div>
+        <h1 id="appMainTitle">Dew · Asistente de Hogar</h1>
+        <div class="sub" id="tierSubtitle">Cargando motor local...</div>
+      </div>
+      <span class="badge badge-ok" id="netBadge">100% Local</span>
+    </div>
+
+    <div class="hw-bar">
+      <span>Hardware:
+        <select id="ramSelect" onchange="switchRam(this.value)">
+          <option value="8">8 GB Móvil (IQ3_XXS · 3,75 GB)</option>
+          <option value="12">12 GB Móvil (Q4_K_M · 5,30 GB)</option>
+          <option value="16">16 GB RedMagic Astra (Q4_K_M · 8K ctx · Vulkan)</option>
+        </select>
+      </span>
+      <div style="display:flex; gap:5px; align-items:center;">
+        <a href="/dew-hogar-redmagic-16gb-debug.apk" download style="background:#14b8a6; color:#0f172a; text-decoration:none; border-radius:6px; padding:2px 7px; font-size:0.7rem; font-weight:700;">📲 APK</a>
+        <button onclick="toggleTabletLayout()" id="tabletModeBtn">🖥️ Vista Tablet</button>
+        <button onclick="toggleOffline()" id="offlineBtn">Modo Avión</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Tarjeta Permanente de Voz y Respuesta -->
+      <div class="card voice-box">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3>Voz Push-to-Talk (Whisper + Qwen3.8-9B + Piper)</h3>
+          <span class="badge badge-ok" id="thinkModeBadge">Modo Rápido &lt;1s</span>
+        </div>
+        <div id="spokenReply" style="font-size:0.86rem; line-height:1.35; margin:6px 0;">
+          Hola. Todo lo que hablemos se procesa en este teléfono. ¿Qué organizamos hoy?
+        </div>
+        <div id="chemAlertBox" style="display:none; margin-top:6px;" class="badge badge-danger"></div>
+        <div class="input-row">
+          <input id="voiceInput" type="text" placeholder="Habla o escribe a Dew..." />
+          <button class="btn" onclick="sendUtterance()">Hablar</button>
+        </div>
+        <div class="quick-chips">
+          <button onclick="quickSay('Apunta que se ha acabado la leche sin lactosa')">+ Falta leche</button>
+          <button onclick="quickSay('Planifícame el menú semanal de cenas con presupuesto de 30 euros aprovechando lo que caduca')">Planificar semana (&lt;think&gt;)</button>
+          <button onclick="quickSay('¿Puedo mezclar lejía con amoniaco para limpiar el baño?')">Probar CHEM_GUARD</button>
+        </div>
+      </div>
+
+      <!-- Pestaña 1: Nevera, Ticket y Cesta -->
+      <div id="tab-inventory">
+        <div class="card">
+          <h3>Nevera, Despensa y Limpieza</h3>
+          <div id="inventoryList"></div>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Escanear Ticket de Supermercado (OCR Local)</h3>
+          <textarea id="receiptInput" rows="3" style="width:100%;">MERCADONA S.A.
+2 L.ENT.S/LACT HAC 2,10
+1 PECH.PAVO LONCH 2,15
+1 LAVAVAJ.MANO B.VERDE 1,85
+TOTAL 6,10 EUR</textarea>
+          <button class="btn" style="margin-top:6px; width:100%;" onclick="scanReceipt()">Procesar Ticket en el Móvil</button>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Planificador Flexible (Tu Presupuesto y Comensales)</h3>
+          <div class="input-row">
+            <input id="planDiners" type="number" min="1" max="12" value="2" placeholder="Comensales" title="Nº de comensales" />
+            <input id="planBudget" type="number" step="0.5" value="35" placeholder="Presupuesto € (opcional)" title="Tu presupuesto límite en €" />
+            <input id="planStore" type="text" value="Mercadona" placeholder="Tu tienda" />
+          </div>
+          <button class="btn" style="margin-top:6px; width:100%;" onclick="runFlexiblePlan()">Generar Menú y Cesta Ajustada</button>
+          <div id="mealPlanBox" class="small" style="margin-top:6px;"></div>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Escáner EAN-13 y Guardia de Alérgenos</h3>
+          <div class="small">Tus alérgenos/evitados (separados por coma):</div>
+          <input id="userAllergens" type="text" value="lactosa, cacahuete" style="width:100%; margin:4px 0; padding:6px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.78rem;" />
+          <div class="quick-chips">
+            <button onclick="scanBarcode('8480000107046')">Leche Sin Lactosa (8480000107046)</button>
+            <button onclick="scanBarcode('8480000231406')">Crema Cacahuete (8480000231406)</button>
+          </div>
+          <div id="barcodeResultBox" class="small" style="margin-top:6px;"></div>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Comparador Histórico Multi-Tienda (Offline)</h3>
+          <div class="input-row">
+            <input id="priceQueryInput" type="text" value="Aceite de oliva" />
+            <button class="btn-secondary" onclick="comparePrices()">Comparar</button>
+          </div>
+          <div id="priceCompareBox" class="small" style="margin-top:6px;"></div>
+        </div>
+
+        <div class="card" style="margin-top:10px;">
+          <h3>Cesta de Compra Propuesta (Sin compra automática)</h3>
+          <div id="cartBox"></div>
+        </div>
+      </div>
+
+      <!-- Pestaña 2: Domótica LAN -->
+      <div id="tab-domotics" style="display:none;">
+        <div class="card">
+          <h3>Domótica Local (Home Assistant Wi-Fi)</h3>
+          <p class="small">La IA interpreta tu voz, pero el código valida permisos, protege el router y exige confirmación en cerraduras.</p>
+          <button class="btn-secondary" style="width:100%; margin-bottom:8px;" onclick="domoticAreaOff()"> Comando grupal: "Apagar todo el salón"</button>
+          <div id="devicesList"></div>
+        </div>
+      </div>
+
+      <!-- Pestaña 3: Trámites en España -->
+      <div id="tab-gov" style="display:none;">
+        <div class="card">
+          <h3>Copiloto de Trámites en España (Nivel 2 - Handoff)</h3>
+          <p class="small">Dew nunca pide tus claves de Cl@ve ni actúa como médico o asesor fiscal. Prepara tu checklist y abre la app oficial.</p>
+          <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;">
+            <button class="btn" onclick="prepareGov('madrid')">Preparar Cita Médica SERMAS (Madrid)</button>
+            <button class="btn" onclick="prepareGov('cataluna')">Preparar Cita Médica CatSalut (Cataluña)</button>
+            <button class="btn" onclick="prepareGov('renta_borrador')">Preparar Revisión Renta (AEAT)</button>
+            <button class="btn" onclick="prepareGov('renovacion_dni')">Preparar Renovación DNI (Mi Carpeta Ciudadana)</button>
+          </div>
+          <div id="govList"></div>
+        </div>
+      </div>
+
+      <!-- Pestaña 4: Privacidad y Memoria -->
+      <div id="tab-privacy" style="display:none;">
+        <div class="card">
+          <h3>Lo que Dew sabe de ti (Con tu permiso)</h3>
+          <div id="pendingMemoriesBox"></div>
+          <div id="memoriesList" style="margin-top:8px;"></div>
+          <div style="display:flex; gap:6px; margin-top:10px;">
+            <button class="btn-secondary" onclick="exportJson()">Exportar JSON</button>
+            <button class="btn-danger" onclick="wipeAll()">Borrar Toda mi Memoria</button>
+          </div>
+        </div>
+        <div class="card" style="margin-top:10px;">
+          <h3>Registro de Auditoría (Action Log)</h3>
+          <div id="auditList" class="small"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="active" id="nav-inventory" onclick="showTab('inventory')">Despensa</button>
+      <button id="nav-domotics" onclick="showTab('domotics')">Domótica</button>
+      <button id="nav-gov" onclick="showTab('gov')">Trámites ES</button>
+      <button id="nav-privacy" onclick="showTab('privacy')">Mi Memoria</button>
+    </div>
+  </div>
+
+  <script>
+    let currentState = null;
+
+    async function apiCall(payload) {
+      const res = await fetch('/api/action', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.state) {
+        currentState = data.state;
+        renderState(data.state);
+      }
+      return data;
+    }
+
+    function showTab(tab) {
+      ['inventory', 'domotics', 'gov', 'privacy'].forEach(t => {
+        document.getElementById('tab-' + t).style.display = (t === tab) ? 'block' : 'none';
+        document.getElementById('nav-' + t).className = (t === tab) ? 'active' : '';
+      });
+    }
+
+    function quickSay(text) {
+      document.getElementById('voiceInput').value = text;
+      sendUtterance();
+    }
+
+    async function sendUtterance() {
+      const input = document.getElementById('voiceInput');
+      if (!input.value.trim()) return;
+      const data = await apiCall({action: 'voice_or_text_turn', utterance: input.value});
+      input.value = '';
+      if (data.turn_result) {
+        document.getElementById('spokenReply').textContent = data.turn_result.spoken_reply;
+        const badge = document.getElementById('thinkModeBadge');
+        if (data.turn_result.mode === 'deep_think') {
+          badge.textContent = 'Modo Planificador <think>';
+          badge.className = 'badge badge-warn';
+        } else {
+          badge.textContent = 'Modo Rápido <1s';
+          badge.className = 'badge badge-ok';
+        }
+        const chemBox = document.getElementById('chemAlertBox');
+        if (data.turn_result.chemical_hazard) {
+          chemBox.style.display = 'inline-block';
+          chemBox.textContent = data.turn_result.chemical_hazard;
+        } else {
+          chemBox.style.display = 'none';
+        }
+      }
+    }
+
+    async function switchRam(val) {
+      await apiCall({action: 'switch_hardware_ram', ram_gb: parseFloat(val)});
+    }
+
+    async function toggleOffline() {
+      const next = !(currentState && currentState.offline_mode);
+      await apiCall({action: 'toggle_offline', offline: next});
+    }
+
+    async function scanReceipt() {
+      const raw = document.getElementById('receiptInput').value;
+      const data = await apiCall({action: 'scan_spanish_receipt', raw_ocr: raw});
+      if (data.parsed_receipt) {
+        document.getElementById('spokenReply').textContent =
+          `Ticket de ${data.parsed_receipt.store} procesado en local: ${data.parsed_receipt.item_count} productos (${data.parsed_receipt.calculated_total_eur.toFixed(2)} €).`;
+      }
+    }
+
+    async function runFlexiblePlan() {
+      const diners = document.getElementById('planDiners').value || 2;
+      const budget = document.getElementById('planBudget').value;
+      const store = document.getElementById('planStore').value || 'Tu supermercado';
+      const data = await apiCall({
+        action: 'generate_flexible_plan',
+        diners_count: parseInt(diners, 10),
+        budget_eur: budget,
+        preferred_store: store
+      });
+      if (data.plan_result) {
+        const p = data.plan_result;
+        document.getElementById('mealPlanBox').innerHTML =
+          p.meal_plan.map(d => `<div>• <strong>${d.day}:</strong> ${d.title} (${d.prep_minutes} min)</div>`).join('') +
+          `<div style="margin-top:4px; font-weight:600;">Cesta faltante: ${p.budget_summary.estimated_total_eur.toFixed(2)} € ` +
+          (p.budget_summary.user_budget_limit_eur ? `(Límite: ${p.budget_summary.user_budget_limit_eur.toFixed(2)} €)` : '(Sin límite fijo)') + `</div>`;
+      }
+    }
+
+    async function scanBarcode(ean13) {
+      const customAllergens = document.getElementById('userAllergens').value;
+      const data = await apiCall({action: 'scan_barcode_ean13', ean13: ean13, custom_allergens: customAllergens});
+      if (data.scan_result && data.scan_result.found) {
+        const sr = data.scan_result;
+        const box = document.getElementById('barcodeResultBox');
+        if (sr.allergen_check.safe_for_household) {
+          box.innerHTML = `<span class="badge badge-ok">Apto para tu hogar</span> Añadido: <strong>${sr.product.product_name}</strong>`;
+        } else {
+          box.innerHTML = `<span class="badge badge-danger">${sr.allergen_check.warning_message}</span>`;
+        }
+      }
+    }
+
+    async function comparePrices() {
+      const q = document.getElementById('priceQueryInput').value;
+      const data = await apiCall({action: 'compare_prices', product_query: q});
+      const box = document.getElementById('priceCompareBox');
+      if (data.price_comparison && data.price_comparison.found) {
+        const c = data.price_comparison;
+        box.innerHTML =
+          `Mejor precio en <strong>${c.best_offer.store}</strong>: ${c.best_offer.unit_price_eur.toFixed(2)} €/${c.best_offer.unit} ` +
+          `(Ahorras ${c.potential_savings_per_unit_eur.toFixed(2)} €/ud frente al más caro).`;
+      } else {
+        box.textContent = 'Sin registros previos para ese producto.';
+      }
+    }
+
+    async function resolveUncertainty(oldName) {
+      const confirmed = prompt('¿Qué hay realmente en "' + oldName + '"?', 'Lentejas caseras en táper');
+      if (confirmed) {
+        await apiCall({action: 'resolve_fridge_uncertainty', old_name: oldName, confirmed_name: confirmed});
+      }
+    }
+
+    async function confirmCart(cartId) {
+      await apiCall({action: 'confirm_cart', cart_id: cartId});
+    }
+
+    async function domoticAreaOff() {
+      const data = await apiCall({action: 'domotics_command', area: 'salon', domotic_action: 'turn_off'});
+      if (data.domotics_result) {
+        const r = data.domotics_result;
+        document.getElementById('spokenReply').textContent =
+          `Salón: apagadas (${r.executed.join(', ')}). Protegidos sin apagar: (${r.skipped_protected.join(', ')}). Sin red: (${r.offline_devices.join(', ')}).`;
+      }
+    }
+
+    async function unlockDoor(entityId) {
+      if (confirm('CONFIRMACIÓN DE SEGURIDAD: ¿Autorizas con tu huella desbloquear la Cerradura Puerta Principal?')) {
+        await apiCall({action: 'domotics_command', entity_id: entityId, domotic_action: 'unlock', user_confirmed_critical: true});
+      }
+    }
+
+    async function prepareGov(svcType) {
+      const data = await apiCall({action: 'prepare_spanish_service', service_type: svcType});
+      if (data.procedure_result) {
+        document.getElementById('spokenReply').textContent =
+          `Trámite preparado en local con su checklist oficial. Pulsa en la tarjeta cuando quieras abrir la aplicación oficial.`;
+      }
+    }
+
+    async function approveMemory(reqId) {
+      await apiCall({action: 'approve_memory', request_id: reqId});
+    }
+
+    async function wipeAll() {
+      if (confirm('¿Seguro que deseas borrar criptográficamente toda la memoria e inventario de este teléfono?')) {
+        await apiCall({action: 'wipe_all_data'});
+      }
+    }
+
+    function exportJson() {
+      const blob = new Blob([JSON.stringify(currentState, null, 2)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'dew_memoria_exportada.json'; a.click();
+    }
+
+    function renderState(s) {
+      document.getElementById('tierSubtitle').textContent =
+        `${s.tier.tier_id} · ${s.tier.quantization}`;
+      const netBadge = document.getElementById('netBadge');
+      netBadge.textContent = s.offline_mode ? 'Modo Avión (Offline)' : 'Local-First Activo';
+      netBadge.className = s.offline_mode ? 'badge badge-warn' : 'badge badge-ok';
+
+      // Inventario
+      const invEl = document.getElementById('inventoryList');
+      invEl.innerHTML = s.inventory.map(item => {
+        const isUncertain = item.confidence < 0.70;
+        return `<div class="item-row">
+          <div>
+            <strong>${item.normalized_name}</strong> (${item.qty} ${item.unit})
+            <div class="small">${item.category} · ${item.uncertainty_note || (item.estimated_expiry_date ? 'Caduca: ' + item.estimated_expiry_date : 'OK')}</div>
+          </div>
+          <div>
+            ${isUncertain
+              ? `<button class="btn-secondary" onclick="resolveUncertainty('${item.normalized_name}')">Confirmar (${Math.round(item.confidence*100)}%)</button>`
+              : `<span class="badge badge-ok">${Math.round(item.confidence*100)}%</span>`}
+          </div>
+        </div>`;
+      }).join('') || '<div class="small">Inventario vacío.</div>';
+
+      // Cestas
+      const cartEl = document.getElementById('cartBox');
+      const latestCart = s.shopping_carts[0];
+      if (latestCart) {
+        const items = JSON.parse(latestCart.items_json);
+        cartEl.innerHTML = `
+          <div class="small">Tienda: <strong>${latestCart.store}</strong> · Estado: <span class="badge ${latestCart.status === 'CONFIRMED_BY_USER' ? 'badge-ok' : 'badge-warn'}">${latestCart.status}</span></div>
+          <div style="margin:6px 0;">
+            ${items.map(i => `<div class="small">• ${i.name} — ${Number(i.est_price_eur).toFixed(2)} €</div>`).join('')}
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+            <strong>Total estimado: ${Number(latestCart.estimated_total_eur).toFixed(2)} €</strong>
+            ${latestCart.status !== 'CONFIRMED_BY_USER'
+              ? `<button class="btn" onclick="confirmCart(${latestCart.cart_id})">Confirmar Cesta</button>`
+              : `<span class="badge badge-ok">Aprobada por ti</span>`}
+          </div>`;
+      } else {
+        cartEl.innerHTML = '<div class="small">Sin cestas pendientes.</div>';
+      }
+
+      // Domótica
+      const devEl = document.getElementById('devicesList');
+      devEl.innerHTML = s.devices.map(d => `
+        <div class="item-row">
+          <div>
+            <strong>${d.friendly_name}</strong>
+            <div class="small">Estado: ${d.state} ${d.protected ? '· [PROTEGIDO]' : ''} ${!d.online ? '· [SIN CONEXIÓN LAN]' : ''}</div>
+          </div>
+          <div>
+            ${d.domain === 'lock'
+              ? `<button class="btn-danger" onclick="unlockDoor('${d.entity_id}')">Abrir (Huella)</button>`
+              : `<span class="badge ${d.online ? 'badge-ok' : 'badge-warn'}">${d.online ? 'Online' : 'Offline'}</span>`}
+          </div>
+        </div>
+      `).join('');
+
+      // Trámites españoles
+      const govEl = document.getElementById('govList');
+      govEl.innerHTML = s.spanish_procedures.map(p => {
+        const checks = JSON.parse(p.checklist_json);
+        return `<div style="border-top:1px solid #e2e8f0; padding-top:8px; margin-top:8px;">
+          <strong>${p.title}</strong>
+          <div class="small">${p.administration} · App oficial: <code>${p.official_app_package}</code></div>
+          <ul class="small" style="margin:4px 0; padding-left:18px;">
+            ${checks.map(c => `<li>${c}</li>`).join('')}
+          </ul>
+          <a href="${p.official_url}" target="_blank" class="small" style="color:var(--primary); font-weight:600;">Abrir Sede / Canal Oficial (Control del Usuario) →</a>
+        </div>`;
+      }).join('') || '<div class="small">Pulsa un botón arriba para preparar los requisitos de un trámite español.</div>';
+
+      // Privacidad y Memoria
+      const pendEl = document.getElementById('pendingMemoriesBox');
+      pendEl.innerHTML = s.pending_memory_requests.map(r => `
+        <div style="background:var(--amber-bg); padding:8px; border-radius:8px; margin-bottom:6px;">
+          <div style="font-size:0.78rem; font-weight:600;">¿Autorizas que Dew recuerde "${r.key}"?</div>
+          <div class="small">${r.proposed_value}</div>
+          <button class="btn" style="margin-top:5px;" onclick="approveMemory(${r.request_id})">Dar permiso y guardar en mi móvil</button>
+        </div>
+      `).join('');
+
+      const memEl = document.getElementById('memoriesList');
+      memEl.innerHTML = s.memories.map(m => `
+        <div class="item-row">
+          <div><strong>${m.key}:</strong> ${m.value} <div class="small">Categoría: ${m.category} · Permiso otorgado</div></div>
+        </div>
+      `).join('') || '<div class="small">No hay datos personales guardados.</div>';
+
+      const auditEl = document.getElementById('auditList');
+      auditEl.innerHTML = s.audit_log.map(a => `
+        <div style="padding:3px 0; border-bottom:1px solid #f1f5f9;">
+          [${a.action_type}] ${a.summary}
+        </div>
+      `).join('');
+    }
+
+    function toggleTabletLayout(forceState) {
+      const frame = document.getElementById('deviceFrame');
+      const isTablet = typeof forceState === 'boolean' ? forceState : !frame.classList.contains('tablet-mode');
+      frame.classList.toggle('tablet-mode', isTablet);
+      document.getElementById('tabletModeBtn').textContent = isTablet ? '📱 Vista Móvil' : '🖥️ Vista Tablet';
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+
+    fetch('/api/state').then(r => r.json()).then(async s => {
+      currentState = s;
+      const params = new URLSearchParams(window.location.search);
+      const isRedMagicTablet = params.get('device') === 'redmagic_16gb' || window.innerWidth >= 820;
+      if (isRedMagicTablet) {
+        toggleTabletLayout(true);
+        document.getElementById('ramSelect').value = '16';
+        document.getElementById('appMainTitle').textContent = 'Dew · Edición RedMagic Astra 16GB';
+        await switchRam(16);
+      } else {
+        renderState(s);
+      }
+    });
+  </script>
+</body>
+</html>

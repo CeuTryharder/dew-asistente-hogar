@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Permisos Just-in-Time: Solo se solicitan cuando el usuario pulsa Hablar o Escanear Nevera/Ticket -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
+    <!-- Acceso a red solo para: (1) Descarga inicial Wi-Fi del modelo, (2) LAN local Home Assistant -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Visibilidad de paquetes oficiales españoles para Handoff seguro (Android 11+) -->
+    <queries>
+        <package android:name="es.gob.carpetaciudadana" />
+        <package android:name="es.gob.clave" />
+        <package android:name="es.aeat.agenciatributaria" />
+        <package android:name="es.madrid.salud.citasanitaria" />
+        <package android:name="cat.gencat.mobi.lamevasalut" />
+        <package android:name="es.juntadeandalucia.msspa.saludresponde" />
+        <package android:name="es.gva.san.gvasalut" />
+        <package android:name="eus.osakidetza.portalmovil" />
+        <package android:name="es.sergas.sergasmobil" />
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:largeHeap="true"
+        android:usesCleartextTraffic="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@android:style/Theme.Material.NoActionBar"
+        android:label="Dew · Orca Home AI"
+        android:supportsRtl="true">
+
+        <activity
+            android:name=".ui.DewMainActivity"
+            android:exported="true"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

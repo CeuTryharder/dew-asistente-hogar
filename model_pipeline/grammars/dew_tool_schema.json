@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DewAssistantResponse",
+  "description": "Esquema determinista de salida de Dew para empero-ai/Qwen3.8-9B-Distill",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "spoken_reply",
+    "thinking_mode_used",
+    "uncertainty_notes",
+    "proposed_actions"
+  ],
+  "properties": {
+    "spoken_reply": {
+      "type": "string",
+      "description": "Respuesta breve en español de España (máximo 2 frases) para síntesis de voz Piper TTS.",
+      "minLength": 2,
+      "maxLength": 320
+    },
+    "thinking_mode_used": {
+      "type": "boolean"
+    },
+    "uncertainty_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "proposed_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tool",
+          "requires_confirmation",
+          "payload"
+        ],
+        "properties": {
+          "tool": {
+            "type": "string",
+            "enum": [
+              "update_inventory",
+              "ingest_receipt",
+              "confirm_vision_detections",
+              "propose_shopping_items",
+              "propose_shopping_cart",
+              "propose_meal_plan",
+              "request_memory_permission",
+              "control_home_device",
+              "prepare_spanish_procedure",
+              "chemical_safety_refusal",
+              "none"
+            ]
+          },
+          "requires_confirmation": {
+            "type": "boolean"
+          },
+          "payload": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

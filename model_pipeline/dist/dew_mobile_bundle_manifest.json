@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at_utc": "2026-11-11T08:59:47.812652+00:00",
+  "product": "Dew - Asistente Doméstico Personal Local-First",
+  "base_model": {
+    "huggingface_id": "empero-ai/Qwen3.8-9B-Distill",
+    "architecture": "Qwen3.5-9B Hybrid (Gated DeltaNet + Full Attention)",
+    "license": "Apache-2.0",
+    "supports_thinking_switch": true,
+    "fast_turn_prefill": "<|im_start|>assistant\n<think>\n</think>\n",
+    "deep_think_prefill": "<|im_start|>assistant\n<think>\n"
+  },
+  "calibration_metadata": {
+    "language": "es-ES",
+    "domain": "Hogar, Alimentación, Limpieza, Domótica y Servicios Digitales en España",
+    "total_samples": 69,
+    "approx_calibration_tokens": 36247
+  },
+  "tiers": [
+    {
+      "tier_id": "DEW_9B_COMPACT_8GB",
+      "display_name": "Dew 9B Edición Compacta (Móviles 8 GB RAM)",
+      "target_ram_gb_min": 7.5,
+      "target_ram_gb_max": 11.4,
+      "quantization": {
+        "body_type": "IQ3_XXS",
+        "bits_per_weight_avg": 3.06,
+        "token_embd_type": "q4_k",
+        "output_tensor_type": "q5_k",
+        "uses_spanish_imatrix": true
+      },
+      "file_name": "dew-qwen3.8-9b-compact-8gb-iq3_xxs-es.gguf",
+      "estimated_download_size_mb": 3840,
+      "estimated_runtime_ram_mb": 4350,
+      "llama_cpp_runtime_config": {
+        "n_ctx": 4096,
+        "type_k": "q8_0",
+        "type_v": "q4_0",
+        "flash_attn": true,
+        "use_mmap": true,
+        "use_mlock": false,
+        "n_batch": 512,
+        "n_ubatch": 256,
+        "sequential_unload_vision_and_stt": true
+      },
+      "build_verified": false,
+      "download_url": "https://huggingface.co/CeuTryharder/Dew-Qwen3.8-9B-Mobile-ES-GGUF/resolve/main/dew-qwen3.8-9b-compact-8gb-iq3_xxs-es.gguf"
+    },
+    {
+      "tier_id": "DEW_9B_PRO_12GB",
+      "display_name": "Dew 9B Edición Pro (Móviles 12 GB+ RAM)",
+      "target_ram_gb_min": 11.5,
+      "target_ram_gb_max": 64.0,
+      "quantization": {
+        "body_type": "Q4_K_M",
+        "bits_per_weight_avg": 4.85,
+        "token_embd_type": "q5_k",
+        "output_tensor_type": "q6_k",
+        "uses_spanish_imatrix": true
+      },
+      "file_name": "dew-qwen3.8-9b-pro-12gb-q4_k_m-es.gguf",
+      "estimated_download_size_mb": 5420,
+      "estimated_runtime_ram_mb": 6100,
+      "llama_cpp_runtime_config": {
+        "n_ctx": 4096,
+        "type_k": "q8_0",
+        "type_v": "q4_0",
+        "flash_attn": true,
+        "use_mmap": true,
+        "use_mlock": false,
+        "n_batch": 512,
+        "n_ubatch": 512,
+        "sequential_unload_vision_and_stt": false
+      },
+      "build_verified": false,
+      "download_url": "https://huggingface.co/CeuTryharder/Dew-Qwen3.8-9B-Mobile-ES-GGUF/resolve/main/dew-qwen3.8-9b-pro-12gb-q4_k_m-es.gguf"
+    }
+  ],
+  "auxiliary_local_models": {
+    "vad": {
+      "name": "Silero VAD v5",
+      "runtime": "sherpa-onnx",
+      "license": "MIT",
+      "size_mb": 1.8
+    },
+    "stt": {
+      "name": "Whisper Base Multilingual INT8",
+      "runtime": "sherpa-onnx",
+      "license": "MIT",
+      "size_mb": 78.0,
+      "language": "es"
+    },
+    "tts": {
+      "name": "Piper VITS es_ES (davefx-medium)",
+      "runtime": "sherpa-onnx",
+      "license": "MIT",
+      "size_mb": 61.5,
+      "language": "es-ES"
+    }
+  },
+  "bundled_control_artifacts": {
+    "fast_turn_grammar": {
+      "file": "dew_fast_turn.gbnf",
+      "sha256": "3d79109c2fb594c04b170bdbdf004ece4fadf487ca7a0fc2a1d65b4d16443cf5"
+    },
+    "deep_think_grammar": {
+      "file": "dew_deep_think_turn.gbnf",
+      "sha256": "d0c9c0c547d425f41f2352d888b1da5e60f93587600b891cddf098122fc87986"
+    },
+    "json_schema": {
+      "file": "dew_tool_schema.json",
+      "sha256": "4d80eb3ceea172bdf578bec6d679e996bd48962372fdabcb34176f305daae31e"
+    },
+    "system_prefix": {
+      "file": "dew_system_prefix.txt",
+      "sha256": "f64079b012d3147f7a969b340e6aad7c4efb5116d21aef5e4f86d27da1603fbe"
+    }
+  },
+  "updated_at_utc": "2026-11-11T17:03:13.719301+00:00"
+}

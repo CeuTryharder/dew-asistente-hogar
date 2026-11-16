@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Pesos de modelos pesados y sesiones locales (se descargan o generan con run_quantization)
+*.gguf
+*.litertlm
+*.onnx
+*.imatrix
+*.session
+*.bin
+*.pt
+*.pth
+*.safetensors
+model_pipeline/base_weights/
+
+# Bases de datos locales del usuario y claves (privacidad por diseño)
+*.db
+*.sqlite
+*.sqlite3
+*.sqlcipher
+*.key
+*.pem
+*.p12
+*.jks
+*.keystore
+.env
+.env.*
+google-services.json
+
+# Android / Gradle / Kotlin / C++ Third-Party
+.gradle/
+build/
+dist/
+local.properties
+*.apk
+*.aab
+*.dex
+captures/
+.externalNativeBuild/
+.cxx/
+third_party/
+
+# IDEs, grabaciones temporales y Sistema Operativo
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Screenshot_*.jpg
+Screenshot_*.png
+docs/demo/.tmp_chrome_profile/

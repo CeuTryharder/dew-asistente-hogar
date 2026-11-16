@@ -1,0 +1,48 @@
+# Gramática GBNF de Turno Rápido para Dew sobre `empero-ai/Qwen3.8-9B-Distill` (llama.cpp)
+# Nota: En Turno Rápido el prompt ya termina en `<|im_start|>assistant\n<think>\n</think>\n`,
+# por lo que el modelo está forzado matemáticamente por esta gramática a emitir un objeto JSON
+# válido con la respuesta hablada breve y las llamadas a herramientas validadas.
+
+root ::= ws "{" ws
+  "\"spoken_reply\":" ws string "," ws
+  "\"thinking_mode_used\":" ws boolean "," ws
+  "\"uncertainty_notes\":" ws string-array "," ws
+  "\"proposed_actions\":" ws action-array ws
+"}" ws
+
+action-array ::= "[" ws "]" | "[" ws action (ws "," ws action)* ws "]"
+
+action ::= "{" ws
+  "\"tool\":" ws tool-name "," ws
+  "\"requires_confirmation\":" ws boolean "," ws
+  "\"payload\":" ws json-object ws
+"}"
+
+tool-name ::= "\"update_inventory\""
+            | "\"ingest_receipt\""
+            | "\"confirm_vision_detections\""
+            | "\"propose_shopping_items\""
+            | "\"propose_shopping_cart\""
+            | "\"propose_meal_plan\""
+            | "\"request_memory_permission\""
+            | "\"control_home_device\""
+            | "\"prepare_spanish_procedure\""
+            | "\"chemical_safety_refusal\""
+            | "\"none\""
+
+string-array ::= "[" ws "]" | "[" ws string (ws "," ws string)* ws "]"
+
+json-object ::= "{" ws "}" | "{" ws member (ws "," ws member)* ws "}"
+member ::= string ":" ws value
+
+value ::= string | number | boolean | "null" | json-object | json-array
+json-array ::= "[" ws "]" | "[" ws value (ws "," ws value)* ws "]"
+
+boolean ::= "true" | "false"
+number ::= "-"? ("0" | [1-9] [0-9]*) ("." [0-9]+)?
+string ::= "\"" (
+  [^"\\\x00-\x1f] |
+  "\\" (["\\/bfnrt] | "u" [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F])
+)* "\""
+
+ws ::= ([ \t\n\r])*
